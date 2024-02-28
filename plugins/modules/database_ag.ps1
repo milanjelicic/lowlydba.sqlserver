@@ -42,6 +42,11 @@ try {
     try {
         $server = Connect-DbaInstance -SqlInstance $sqlInstance -SqlCredential $sqlCredential
         $existingAg = $server | Get-DbaAvailabilityGroup -AvailabilityGroup $availabilityGroup -EnableException
+        $existingListener = $existingAg.AvailabilityGroupListeners
+        $existingAgReplicas = Get-DbaAgReplica -SqlInstance $existingListener.Name -SqlCredential $sqlCredential -AvailabilityGroup $availabilityGroup
+
+        $primaryNode = ($existingAgReplicas | Where-Object role -eq 'Primary').Name
+        $secondaryNode = ($existingAgReplicas | Where-Object role -eq 'Secondary').Name
     }
     catch {
         $module.FailJson("Error checking availability group status.", $_.Exception.Message)
@@ -52,7 +57,7 @@ try {
         if ($databases.Name -contains $database) {
             try {
                 $removeAgDatabaseSplat = @{
-                    SqlInstance = $sqlInstance
+                    SqlInstance = $primaryNode
                     SqlCredential = $sqlCredential
                     AvailabilityGroup = $availabilityGroup
                     Database = $database
@@ -79,8 +84,10 @@ try {
     elseif ($state -eq "present") {
         try {
             $addAgDatabaseSplat = @{
-                SqlInstance = $sqlInstance
+                SqlInstance = $primaryNode
                 SqlCredential = $sqlCredential
+                Secondary = $secondaryNode
+                SecondarySqlCredential = $sqlCredential
                 AvailabilityGroup = $availabilityGroup
                 Database = $database
                 WhatIf = $checkMode
