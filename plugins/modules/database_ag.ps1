@@ -16,8 +16,7 @@ $spec = @{
     options = @{
         username = @{type = 'str'; required = $false }
         password = @{type = 'str'; required = $false; no_log = $true }
-        enabled = @{type = 'bool'; required = $false; default = $true }
-        force = @{type = 'bool'; required = $false; default = $false }
+        database = @{type = 'str'; required = $true }
         state = @{type = 'str'; required = $false; default = 'present'; choices = @('present', 'absent') }
     }
     required_together = @(
@@ -31,8 +30,8 @@ if ($null -ne $Module.Params.username) {
     [securestring]$secPassword = ConvertTo-SecureString $Module.Params.password -AsPlainText -Force
     [pscredential]$credential = New-Object System.Management.Automation.PSCredential ($Module.Params.username, $secPassword)
 }
-$enabled = $module.Params.enabled
-$force = $module.Params.force
+$database = $module.Params.database
+$state = $module.Params.state
 $checkMode = $module.CheckMode
 $module.Result.changed = $false
 
