@@ -40,10 +40,12 @@ try {
     # Get availability group status
     try {
         $server = Connect-DbaInstance -SqlInstance $sqlInstance -SqlCredential $sqlCredential
-        $existingAg = $server | Get-DbaAvailabilityGroup -EnableException
-        $existingListener = $existingAg.AvailabilityGroupListeners
-        $existingAgReplicas = Get-DbaAgReplica -SqlInstance $existingListener.Name -SqlCredential $sqlCredential -AvailabilityGroup $existingAg.AvailabilityGroup
-        $output = $existingAg
+        $existingAg = $server | Get-DbaAvailabilityGroup -EnableException | Select-Object -ExpandProperty AvailabilityGroup
+        $existingListener = $server | Get-DbaAvailabilityGroup -EnableException | Select-Object -ExpandProperty AvailabilityGroupListeners
+        $existingAgReplicas = Get-DbaAgReplica -SqlInstance $existingListener.Name -SqlCredential $sqlCredential -AvailabilityGroup $existingAg
+
+        $primaryNode = ($agReplicas | Where-Object role -eq 'Primary').Name
+        $secondaryNode = ($agReplicas | Where-Object role -eq 'Secondary').Name
     }
     catch {
         $module.FailJson("Error checking availability group status.", $_.Exception.Message)
@@ -53,29 +55,37 @@ try {
         $databases = $existingAg.AvailabilityDatabases | Select-Object Name
         if ($databases.Name -contains $database) {
             try {
-                $primaryNode = ($agReplicas | Where-Object role -eq 'Primary').Name
                 $output = Remove-DbaAgDatabase -SqlInstance $primaryNode - SqlCredential $sqlCredential `
-                    -AvailabilityGroup $existingAg.AvailabilityGroup `
+                    -AvailabilityGroup $existingAg `
                     -Database $database `
                     -EnableException -Confirm:$false
-                $module.Result.changed = $true
+
+                if ($output.Status -eq "Removed") {
+                    $module.Result.changed = $true
+                }
+                elseif ($output.Status -ne "Removed") {
+                    $module.FailJson("Database [$database] was not removed from AG [$existingAg]. " + $droppedDatabase.Status)
+                }
             }
             catch {
-                $module.FailJson("An exception occurred while trying to remove database [$database] from AG [$existingAg.AvailabilityGroup].", $_)
+                $module.FailJson("An exception occurred while trying to remove database [$database] from AG [$existingAg].", $_)
             }
         }
 
         $module.ExitJson()
     }
     elseif ($state -eq "present") {
-        $primaryNode = ($agReplicas | Where-Object role -eq 'Primary').Name
-        $secondaryNode = ($agReplicas | Where-Object role -eq 'Secondary').Name
-        $output = Add-DbaAgDatabase -SqlInstance $primaryNode - SqlCredential $sqlCredential `
-            -Secondary $secondaryNode -SecondarySqlCredential $sqlCredential `
-            -AvailabilityGroup $existingAg.AvailabilityGroup `
-            -Database $database `
-            -EnableException -Confirm:$false
-        $module.Result.changed = $true
+        try {
+            $output = Add-DbaAgDatabase -SqlInstance $primaryNode - SqlCredential $sqlCredential `
+                -Secondary $secondaryNode -SecondarySqlCredential $sqlCredential `
+                -AvailabilityGroup $existingAg `
+                -Database $database `
+                -EnableException -Confirm:$false
+            $module.Result.changed = $true
+        }
+        catch {
+            $module.FailJson("An exception occurred while trying to add database [$database] to AG [$existingAg].", $_)
+        }
     }
 
     if ($null -ne $output) {
