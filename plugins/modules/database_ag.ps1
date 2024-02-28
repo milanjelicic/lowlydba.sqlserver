@@ -17,6 +17,7 @@ $spec = @{
         username = @{type = 'str'; required = $false }
         password = @{type = 'str'; required = $false; no_log = $true }
         database = @{type = 'str'; required = $true }
+        availability_group = @{type = 'str'; required = $true }
         state = @{type = 'str'; required = $false; default = 'present'; choices = @('present', 'absent') }
     }
     required_together = @(
@@ -31,6 +32,7 @@ if ($null -ne $Module.Params.username) {
     [pscredential]$credential = New-Object System.Management.Automation.PSCredential ($Module.Params.username, $secPassword)
 }
 $database = $module.Params.database
+$availabilityGroup = $module.Params.availability_group
 $state = $module.Params.state
 $checkMode = $module.CheckMode
 $module.Result.changed = $false
@@ -39,9 +41,9 @@ try {
     # Get availability group status
     try {
         $server = Connect-DbaInstance -SqlInstance $sqlInstance -SqlCredential $sqlCredential
-        $existingAg = $server | Get-DbaAvailabilityGroup -EnableException | Select-Object -ExpandProperty AvailabilityGroup
-        $existingListener = $server | Get-DbaAvailabilityGroup -EnableException | Select-Object -ExpandProperty AvailabilityGroupListeners
-        $existingAgReplicas = Get-DbaAgReplica -SqlInstance $existingListener.Name -SqlCredential $sqlCredential -AvailabilityGroup $existingAg
+        $existingAg = $server | Get-DbaAvailabilityGroup -AvailabilityGroup $availabilityGroup -EnableException
+        $existingListener = $existingAg.AvailabilityGroupListeners
+        $existingAgReplicas = Get-DbaAgReplica -SqlInstance $existingListener.Name -SqlCredential $sqlCredential -AvailabilityGroup $availabilityGroup
 
         $primaryNode = ($agReplicas | Where-Object role -eq 'Primary').Name
         $secondaryNode = ($agReplicas | Where-Object role -eq 'Secondary').Name
@@ -57,7 +59,7 @@ try {
                 $removeAgDatabaseSplat = @{
                     SqlInstance = $primaryNode
                     SqlCredential = $sqlCredential
-                    AvailabilityGroup = $existingAg
+                    AvailabilityGroup = $availabilityGroup
                     Database = $database
                     WhatIf = $checkMode
                     EnableException = $true
@@ -69,11 +71,11 @@ try {
                     $module.Result.changed = $true
                 }
                 elseif ($output.Status -ne "Removed") {
-                    $module.FailJson("Database [$database] was not removed from AG [$existingAg]. " + $droppedDatabase.Status)
+                    $module.FailJson("Database [$database] was not removed from AG [$availabilityGroup]. " + $droppedDatabase.Status)
                 }
             }
             catch {
-                $module.FailJson("An exception occurred while trying to remove database [$database] from AG [$existingAg].", $_)
+                $module.FailJson("An exception occurred while trying to remove database [$database] from AG [$availabilityGroup].", $_)
             }
         }
 
@@ -86,7 +88,7 @@ try {
                 SqlCredential = $sqlCredential
                 Secondary = $secondaryNode
                 SecondarySqlCredential = $sqlCredential
-                AvailabilityGroup = $existingAg
+                AvailabilityGroup = $availabilityGroup
                 Database = $database
                 WhatIf = $checkMode
                 EnableException = $true
@@ -96,7 +98,7 @@ try {
             $module.Result.changed = $true
         }
         catch {
-            $module.FailJson("An exception occurred while trying to add database [$database] to AG [$existingAg].", $_)
+            $module.FailJson("An exception occurred while trying to add database [$database] to AG [$availabilityGroup].", $_)
         }
     }
 

@@ -17,6 +17,11 @@ options:
       - Name of the target database.
     type: str
     required: true
+  availability_group:
+    description:
+      - Name of the availability group.
+    type: str
+    required: true
   username:
     description:
       - Username for alternative credential to authenticate with Windows.
@@ -42,6 +47,7 @@ EXAMPLES = r'''
   lowlydba.sqlserver.database_ag:
     sql_instance: sql-01.myco.io
     database: LowlyDB
+    availability_group: AG01
     state: present
 '''
 
