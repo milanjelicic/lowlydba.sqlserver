@@ -54,10 +54,16 @@ try {
         $databases = $existingAg.AvailabilityDatabases | Select-Object Name
         if ($databases.Name -contains $database) {
             try {
-                $output = Remove-DbaAgDatabase -SqlInstance $primaryNode - SqlCredential $sqlCredential `
-                    -AvailabilityGroup $existingAg `
-                    -Database $database `
-                    -EnableException -Confirm:$false
+                $removeAgDatabaseSplat = @{
+                    SqlInstance = $primaryNode
+                    SqlCredential = $sqlCredential
+                    AvailabilityGroup = $existingAg
+                    Database = $database
+                    WhatIf = $checkMode
+                    EnableException = $true
+                    Confirm = $false
+                }
+                $output = Remove-DbaAgDatabase @removeAgDatabaseSplat
 
                 if ($output.Status -eq "Removed") {
                     $module.Result.changed = $true
@@ -75,11 +81,18 @@ try {
     }
     elseif ($state -eq "present") {
         try {
-            $output = Add-DbaAgDatabase -SqlInstance $primaryNode - SqlCredential $sqlCredential `
-                -Secondary $secondaryNode -SecondarySqlCredential $sqlCredential `
-                -AvailabilityGroup $existingAg `
-                -Database $database `
-                -EnableException -Confirm:$false
+            $addAgDatabaseSplat = @{
+                SqlInstance = $primaryNode
+                SqlCredential = $sqlCredential
+                Secondary = $secondaryNode
+                SecondarySqlCredential = $sqlCredential
+                AvailabilityGroup = $existingAg
+                Database = $database
+                WhatIf = $checkMode
+                EnableException = $true
+                Confirm = $false
+            }
+            $output = Add-DbaAgDatabase @addAgDatabaseSplat
             $module.Result.changed = $true
         }
         catch {
