@@ -45,8 +45,8 @@ try {
         $existingListener = $existingAg.AvailabilityGroupListeners
         $existingAgReplicas = Get-DbaAgReplica -SqlInstance $existingListener.Name -SqlCredential $sqlCredential -AvailabilityGroup $availabilityGroup
 
-        $primaryNode = ($agReplicas | Where-Object role -eq 'Primary').Name
-        $secondaryNode = ($agReplicas | Where-Object role -eq 'Secondary').Name
+        $primaryNode = ($existingAgReplicas | Where-Object role -eq 'Primary').Name
+        $secondaryNode = ($existingAgReplicas | Where-Object role -eq 'Secondary').Name
     }
     catch {
         $module.FailJson("Error checking availability group status.", $_.Exception.Message)
