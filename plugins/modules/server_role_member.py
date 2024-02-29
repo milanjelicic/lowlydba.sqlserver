@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# (c) 2022, John McCall (@lowlydba)
+# (c) 2024, Daniel Gutierrez (@gutizar)
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 DOCUMENTATION = r'''
@@ -22,7 +22,7 @@ options:
       - Name of the login to be added to the server role.
     type: str
     required: false
-author: "John McCall (@lowlydba)"
+author: "Daniel Gutierrez (@gutizar)"
 requirements:
   - L(dbatools,https://www.powershellgallery.com/packages/dbatools/) PowerShell module
 extends_documentation_fragment:
