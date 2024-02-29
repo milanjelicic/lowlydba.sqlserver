@@ -89,6 +89,12 @@ try {
                 $module.FailJson("Creating server role [$roleName] failed.", $_)
             }
         }
+        elseif ($existingServerRole.Owner -ne $ownerName) {
+            $existingServerRole.Owner = $ownerName
+            $existingServerRole.Alter()
+            $output = $existingServerRole
+            $module.Result.changed = $true
+        }
 
         if ($null -ne $loginName) {
             try {
