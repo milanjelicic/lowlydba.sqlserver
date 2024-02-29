@@ -41,8 +41,7 @@ try {
     }
 
     if ($state -eq "absent") {
-        $databases = $existingAg.AvailabilityDatabases | Select-Object Name
-        if ($databases.Name -contains $database) {
+        if ($null -ne $existingServerRole) {
             try {
                 $removeServerRoleSplat = @{
                     SqlInstance = $sqlInstance
