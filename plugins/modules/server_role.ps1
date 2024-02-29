@@ -100,7 +100,7 @@ try {
                     MessagesToOutput = $true
                     EnableException = $true
                 }
-                $invokeQueryOutput = Invoke-DbaQuery $invokeQuerySplat
+                $invokeQueryOutput = Invoke-DbaQuery @invokeQuerySplat
                 $module.Result.changed = $true
             }
             catch {
