@@ -1,0 +1,15 @@
+---
+- name: Var block
+  module_defaults:
+    lowlydba.sqlserver.get_replicas:
+      sql_instance: "{{ sqlserver_instance }}"
+      sql_username: "{{ sqlserver_username }}"
+      sql_password: "{{ sqlserver_password }}"
+  tags: ["get_replicas"]
+  block:
+    - name: Get replicas info
+      lowlydba.sqlserver.get_replicas:
+      register: result
+    - assert:
+        that:
+          - result.data != None
