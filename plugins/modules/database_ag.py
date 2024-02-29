@@ -22,16 +22,6 @@ options:
       - Name of the availability group.
     type: str
     required: true
-  username:
-    description:
-      - Username for alternative credential to authenticate with Windows.
-    type: str
-    required: false
-  password:
-    description:
-      - Password for alternative credential to authenticate with Windows.
-    type: str
-    required: false
 author: "John McCall (@lowlydba)"
 requirements:
   - L(dbatools,https://www.powershellgallery.com/packages/dbatools/) PowerShell module

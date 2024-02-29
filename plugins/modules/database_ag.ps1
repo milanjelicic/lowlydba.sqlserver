@@ -14,23 +14,14 @@ $ErrorActionPreference = "Stop"
 $spec = @{
     supports_check_mode = $true
     options = @{
-        username = @{type = 'str'; required = $false }
-        password = @{type = 'str'; required = $false; no_log = $true }
         database = @{type = 'str'; required = $true }
         availability_group = @{type = 'str'; required = $true }
         state = @{type = 'str'; required = $false; default = 'present'; choices = @('present', 'absent') }
     }
-    required_together = @(
-        , @('username', 'password')
-    )
 }
 
 $module = [Ansible.Basic.AnsibleModule]::Create($args, $spec, @(Get-LowlyDbaSqlServerAuthSpec))
 $sqlInstance, $sqlCredential = Get-SqlCredential -Module $module
-if ($null -ne $Module.Params.username) {
-    [securestring]$secPassword = ConvertTo-SecureString $Module.Params.password -AsPlainText -Force
-    [pscredential]$credential = New-Object System.Management.Automation.PSCredential ($Module.Params.username, $secPassword)
-}
 $database = $module.Params.database
 $availabilityGroup = $module.Params.availability_group
 $state = $module.Params.state
