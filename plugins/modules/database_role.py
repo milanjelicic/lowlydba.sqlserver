@@ -38,17 +38,18 @@ extends_documentation_fragment:
 '''
 
 EXAMPLES = r'''
-- name: Add login to server role
+- name: Add database role
   lowlydba.sqlserver.server_role:
     sql_instance: sql-01.myco.io
-    role_name: myrole
+    database: LOWLYDB
+    role_name: mydbrole
     state: present
 '''
 
 RETURN = r'''
 data:
   description:
-    - Output from the C(Add-DbaServerRole) or C(Remove-DbaServerRole) function.
+    - Output from the C(New-DbaDbRole) or C(Remove-DbaDbRole) function.
   returned: success, but not in check_mode.
   type: dict
 '''

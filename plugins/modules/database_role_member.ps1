@@ -14,8 +14,8 @@ $ErrorActionPreference = "Stop"
 $spec = @{
     supports_check_mode = $true
     options = @{
-        role_name = @{type = 'str'; required = $true }
         database = @{type = 'str'; required = $true }
+        role_name = @{type = 'str'; required = $true }
         user_name = @{type = 'str'; required = $true }
         state = @{type = 'str'; required = $false; default = 'present'; choices = @('present', 'absent') }
     }
@@ -23,8 +23,8 @@ $spec = @{
 
 $module = [Ansible.Basic.AnsibleModule]::Create($args, $spec, @(Get-LowlyDbaSqlServerAuthSpec))
 $sqlInstance, $sqlCredential = Get-SqlCredential -Module $module
-$roleName = $module.Params.role_name
 $database = $module.Params.database
+$roleName = $module.Params.role_name
 $userName = $module.Params.user_name
 $state = $module.Params.state
 $checkMode = $module.CheckMode

@@ -12,14 +12,14 @@ description:
   - Adds a user to an existing database role.
 version_added: 0.4.0
 options:
-  role_name:
-    description:
-      - Name of the server role.
-    type: str
-    required: true
   database:
     description:
       - Name of the target database.
+    type: str
+    required: true
+  role_name:
+    description:
+      - Name of the server role.
     type: str
     required: true
   user_name:
@@ -41,8 +41,8 @@ EXAMPLES = r'''
 - name: Add user to database role
   lowlydba.sqlserver.database_role_member:
     sql_instance: sql-01.myco.io
-    role_name: mydbrole
     database: LOWLYDB
+    role_name: mydbrole
     login_name: myuser
     state: present
 '''
