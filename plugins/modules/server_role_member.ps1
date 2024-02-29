@@ -51,12 +51,7 @@ try {
                     Confirm = $false
                 }
                 $output = Remove-DbaServerRoleMember @removeServerRoleMemberSplat
-                if ($output.Status -eq "Success") {
-                    $module.Result.changed = $true
-                }
-                elseif ($output.Status -ne "Success") {
-                    $module.FailJson("Member [$loginName] was not removed from role [$roleName]. " + $output.Status)
-                }
+                $module.Result.changed = $true
             }
             catch {
                 $module.FailJson("Deleting member [$loginName] from role [$roleName] failed.", $_)
