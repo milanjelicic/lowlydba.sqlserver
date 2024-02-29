@@ -6,7 +6,7 @@
 
 DOCUMENTATION = r'''
 ---
-module: hadr
+module: server_role
 short_description: Creates a server role
 description:
   - Creates a server role.

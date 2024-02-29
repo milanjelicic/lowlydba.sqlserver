@@ -6,7 +6,7 @@
 
 DOCUMENTATION = r'''
 ---
-module: hadr
+module: database_ag
 short_description: Add/remove database to/from availability group
 description:
   - Add or remove a database to/from a given availability group.
