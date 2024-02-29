@@ -39,7 +39,7 @@ extends_documentation_fragment:
 '''
 
 EXAMPLES = r'''
-- name: Create server role
+- name: Add login to server role
   lowlydba.sqlserver.server_role:
     sql_instance: sql-01.myco.io
     role_name: myrole
