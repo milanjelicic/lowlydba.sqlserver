@@ -12,20 +12,19 @@ description:
   - Creates a server role.
 version_added: 0.4.0
 options:
+  database:
+    description:
+      - Name of the target database.
+    type: str
+    required: true
   role_name:
     description:
       - Name of the server role.
     type: str
     required: true
-  login_name:
-    description:
-      - Server login to be granted ALTER permissions on the role.
-    type: str
-    required: false
   owner_name:
     description:
       - Owner of the role.
-    default: sa
     type: str
     required: false
 author: "Daniel Gutierrez (@gutizar)"
@@ -39,17 +38,18 @@ extends_documentation_fragment:
 '''
 
 EXAMPLES = r'''
-- name: Add login to server role
+- name: Add database role
   lowlydba.sqlserver.server_role:
     sql_instance: sql-01.myco.io
-    role_name: myrole
+    database: LOWLYDB
+    role_name: mydbrole
     state: present
 '''
 
 RETURN = r'''
 data:
   description:
-    - Output from the C(Add-DbaServerRole) or C(Remove-DbaServerRole) function.
+    - Output from the C(New-DbaDbRole) or C(Remove-DbaDbRole) function.
   returned: success, but not in check_mode.
   type: dict
 '''
