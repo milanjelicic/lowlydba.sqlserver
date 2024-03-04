@@ -6,22 +6,22 @@
 
 DOCUMENTATION = r'''
 ---
-module: database_ag
-short_description: Add/remove database to/from availability group
+module: server_role_member
+short_description: Adds a login to an existing server role
 description:
-  - Add or remove a database to/from a given availability group.
+  - Adds a login to an existing server role.
 version_added: 0.4.0
 options:
-  database:
+  role_name:
     description:
-      - Name of the target database.
+      - Name of the server role.
     type: str
     required: true
-  availability_group:
+  login_name:
     description:
-      - Name of the availability group.
+      - Name of the login to be added to the server role.
     type: str
-    required: true
+    required: false
 author: "Daniel Gutierrez (@gutizar)"
 requirements:
   - L(dbatools,https://www.powershellgallery.com/packages/dbatools/) PowerShell module
@@ -33,18 +33,18 @@ extends_documentation_fragment:
 '''
 
 EXAMPLES = r'''
-- name: Add database to availability group
-  lowlydba.sqlserver.database_ag:
+- name: Create server role
+  lowlydba.sqlserver.server_role_member:
     sql_instance: sql-01.myco.io
-    database: LowlyDB
-    availability_group: AG01
+    role_name: myrole
+    login_name: mylogin
     state: present
 '''
 
 RETURN = r'''
 data:
   description:
-    - Output from the C(Add-DbaAgDatabase) or C(Remove-DbaAgDatabase) function.
+    - Output from the C(Add-DbaServerRoleMember) or C(Remove-DbaServerRoleMember) function.
   returned: success, but not in check_mode.
   type: dict
 '''

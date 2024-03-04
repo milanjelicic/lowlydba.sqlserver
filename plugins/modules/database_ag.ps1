@@ -1,7 +1,7 @@
 #!powershell
 # -*- coding: utf-8 -*-
 
-# (c) 2022, John McCall (@lowlydba)
+# (c) 2024, Daniel Gutierrez (@gutizar)
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 #AnsibleRequires -CSharpUtil Ansible.Basic
@@ -14,23 +14,14 @@ $ErrorActionPreference = "Stop"
 $spec = @{
     supports_check_mode = $true
     options = @{
-        username = @{type = 'str'; required = $false }
-        password = @{type = 'str'; required = $false; no_log = $true }
         database = @{type = 'str'; required = $true }
         availability_group = @{type = 'str'; required = $true }
         state = @{type = 'str'; required = $false; default = 'present'; choices = @('present', 'absent') }
     }
-    required_together = @(
-        , @('username', 'password')
-    )
 }
 
 $module = [Ansible.Basic.AnsibleModule]::Create($args, $spec, @(Get-LowlyDbaSqlServerAuthSpec))
 $sqlInstance, $sqlCredential = Get-SqlCredential -Module $module
-if ($null -ne $Module.Params.username) {
-    [securestring]$secPassword = ConvertTo-SecureString $Module.Params.password -AsPlainText -Force
-    [pscredential]$credential = New-Object System.Management.Automation.PSCredential ($Module.Params.username, $secPassword)
-}
 $database = $module.Params.database
 $availabilityGroup = $module.Params.availability_group
 $state = $module.Params.state
