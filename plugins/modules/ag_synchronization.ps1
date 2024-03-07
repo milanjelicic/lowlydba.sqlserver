@@ -50,8 +50,8 @@ try {
     }
 
     $syncAvailabilityGroupSplat = @{
-        SqlInstance = $primaryNode
-        SqlCredential = $sqlCredential
+        Primary = $primaryNode
+        PrimarySqlCredential = $sqlCredential
         Secondary = $secondaryNode
         SecondarySqlCredential = $sqlCredential
         AvailabilityGroup = $availabilityGroup
@@ -69,7 +69,7 @@ try {
         $output = Sync-DbaAvailabilityGroup @syncAvailabilityGroupSplat
     }
     catch {
-        $module.FailJson("Synchronizing availability group [$availabilityGroup] failed.")
+        $module.FailJson("Synchronizing availability group [$availabilityGroup] failed. [$_].")
     }
 
     if ($null -ne $output) {
