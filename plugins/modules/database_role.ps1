@@ -46,7 +46,8 @@ try {
                 $removeDatabaseRoleSplat = @{
                     SqlInstance = $sqlInstance
                     SqlCredential = $sqlCredential
-                    ServerRole = $roleName
+                    Database = $database
+                    Role = $roleName
                     WhatIf = $checkMode
                     EnableException = $true
                     Confirm = $false
@@ -67,13 +68,14 @@ try {
         $module.ExitJson()
     }
     elseif ($state -eq "present") {
-        # Create server role
+        # Create database role
         if ($null -eq $existingDatabaseRole) {
             try {
                 $newDatabaseRoleSplat = @{
                     SqlInstance = $sqlInstance
                     SqlCredential = $sqlCredential
-                    ServerRole = $roleName
+                    Database = $database
+                    Role = $roleName
                     WhatIf = $checkMode
                     EnableException = $true
                     Confirm = $false
