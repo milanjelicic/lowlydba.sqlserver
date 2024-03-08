@@ -62,7 +62,7 @@ try {
                     $module.Result.changed = $true
                 }
                 elseif ($output.Status -ne "Removed") {
-                    $module.FailJson("Database [$database] was not removed from AG [$availabilityGroup]. " + $droppedDatabase.Status)
+                    $module.FailJson("Database [$database] was not removed from AG [$availabilityGroup]. " + $output.Status)
                 }
             }
             catch {
