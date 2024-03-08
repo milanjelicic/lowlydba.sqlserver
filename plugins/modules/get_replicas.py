@@ -17,7 +17,7 @@ options:
       - The SQL Server instance to lookup.
     type: str
     required: true
-  ag_name:
+  availability_group:
     description:
       - Name of the Availability Group to lookup.
     type: str

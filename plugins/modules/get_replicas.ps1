@@ -20,7 +20,7 @@ $spec = @{
 
 $module = [Ansible.Basic.AnsibleModule]::Create($args, $spec, @(Get-LowlyDbaSqlServerAuthSpec))
 $sqlInstance, $sqlCredential = Get-SqlCredential -Module $module
-$agName = $module.Params.ag_name
+$agName = $module.Params.availability_group
 $module.Result.changed = $false
 
 try {
