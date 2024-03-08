@@ -85,7 +85,8 @@ try {
                 EnableException = $true
                 Confirm = $false
             }
-            $output = Add-DbaAgDatabase @addAgDatabaseSplat
+            Add-DbaAgDatabase @addAgDatabaseSplat
+            $output = $null
             $module.Result.changed = $true
         }
         catch {
