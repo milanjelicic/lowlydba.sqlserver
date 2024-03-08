@@ -53,12 +53,7 @@ try {
                     Confirm = $false
                 }
                 $output = Remove-DbaDbRole @removeDatabaseRoleSplat
-                if ($output.Status -eq "Success") {
-                    $module.Result.changed = $true
-                }
-                elseif ($output.Status -ne "Success") {
-                    $module.FailJson("Database role [$roleName] was not removed. " + $output.Status)
-                }
+                $module.Result.changed = $true
             }
             catch {
                 $module.FailJson("Deleting database role [$roleName] failed.", $_)
