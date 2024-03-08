@@ -40,7 +40,7 @@ try {
         $secondaryNode = ($existingAgReplicas | Where-Object role -eq 'Secondary').Name
     }
     catch {
-        $module.FailJson("Error checking availability group status.", $_.Exception.Message)
+        $module.FailJson("Error checking availability group status.", $_)
     }
 
     if ($state -eq "absent") {
