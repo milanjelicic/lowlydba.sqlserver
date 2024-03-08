@@ -14,7 +14,7 @@ $ErrorActionPreference = "Stop"
 $spec = @{
     supports_check_mode = $true
     options = @{
-        ag_name = @{type = 'str'; required = $true }
+        availability_group = @{type = 'str'; required = $true }
     }
 }
 
