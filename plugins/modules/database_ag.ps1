@@ -100,5 +100,5 @@ try {
     $module.ExitJson()
 }
 catch {
-    $module.FailJson("Error configuring AG database.")
+    $module.FailJson("Error configuring AG database.", $_)
 }
