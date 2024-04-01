@@ -68,7 +68,7 @@ try {
                     SqlInstance = $sqlInstance
                     SqlCredential = $sqlCredential
                     Database = $database
-                    Query = "REVOKE $permission TO $roleName"
+                    Query = "REVOKE $permission FROM $roleName"
                     MessagesToOutput = $true
                     EnableException = $true
                 }
