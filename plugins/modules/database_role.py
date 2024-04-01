@@ -6,10 +6,10 @@
 
 DOCUMENTATION = r'''
 ---
-module: server_role
-short_description: Creates a server role
+module: database_role
+short_description: Creates a database role
 description:
-  - Creates a server role.
+  - Creates a database role.
 version_added: 0.4.0
 options:
   database:
@@ -19,7 +19,7 @@ options:
     required: true
   role_name:
     description:
-      - Name of the server role.
+      - Name of the database role.
     type: str
     required: true
   owner_name:
@@ -39,7 +39,7 @@ extends_documentation_fragment:
 
 EXAMPLES = r'''
 - name: Add database role
-  lowlydba.sqlserver.server_role:
+  lowlydba.sqlserver.database_role:
     sql_instance: sql-01.myco.io
     database: LOWLYDB
     role_name: mydbrole
