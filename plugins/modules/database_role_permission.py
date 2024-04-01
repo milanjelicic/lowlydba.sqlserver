@@ -6,10 +6,10 @@
 
 DOCUMENTATION = r'''
 ---
-module: database_role
-short_description: Creates a database role
+module: database_role_permission
+short_description: Modifies the permissions for a database role
 description:
-  - Creates a database role.
+  - Modifies the permissions for a database role.
 version_added: 0.4.0
 options:
   database:
@@ -19,37 +19,35 @@ options:
     required: true
   role_name:
     description:
-      - Name of the database role.
+      - Name of the server role.
     type: str
     required: true
-  owner_name:
+  permission:
     description:
-      - Owner of the role.
+      - Name of the permission to modify.
+    type: str
+    required: true
+  action:
+    description:
+      - Action to permform on the permission. Either grant, deny or revoke.
     type: str
     required: false
+    default: grant
 author: "Daniel Gutierrez (@gutizar)"
 requirements:
   - L(dbatools,https://www.powershellgallery.com/packages/dbatools/) PowerShell module
 extends_documentation_fragment:
   - lowlydba.sqlserver.sql_credentials
-  - lowlydba.sqlserver.attributes.check_mode
   - lowlydba.sqlserver.attributes.platform_win
-  - lowlydba.sqlserver.state
 '''
 
 EXAMPLES = r'''
-- name: Add database role
-  lowlydba.sqlserver.database_role:
+- name: Grant ALTER to role mydbrole
+  lowlydba.sqlserver.database_role_permission:
     sql_instance: sql-01.myco.io
     database: LOWLYDB
     role_name: mydbrole
-    state: present
+    action: grant
 '''
 
-RETURN = r'''
-data:
-  description:
-    - Output from the C(New-DbaDbRole) or C(Remove-DbaDbRole) function.
-  returned: success, but not in check_mode.
-  type: dict
-'''
+RETURN = r''''''
