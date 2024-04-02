@@ -60,6 +60,7 @@ try {
         ExcludeLogin = $excludeLogin
         Job = $job
         ExcludeJob = $excludeJob
+        Force = $true
         WhatIf = $checkMode
         EnableException = $true
         Confirm = $false
@@ -67,6 +68,7 @@ try {
 
     try {
         $output = Sync-DbaAvailabilityGroup @syncAvailabilityGroupSplat
+        $module.Result.changed = $true
     }
     catch {
         $module.FailJson("Synchronizing availability group [$availabilityGroup] failed. [$_].")
