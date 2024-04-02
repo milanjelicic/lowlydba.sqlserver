@@ -1,7 +1,7 @@
 #!powershell
 # -*- coding: utf-8 -*-
 
-# (c) 2024, Daniel Gutierrez (@gutizar)
+# (c) 2022, John McCall (@lowlydba)
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 #AnsibleRequires -CSharpUtil Ansible.Basic
