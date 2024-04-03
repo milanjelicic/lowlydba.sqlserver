@@ -69,8 +69,6 @@ try {
                 $module.FailJson("An exception occurred while trying to remove database [$database] from AG [$availabilityGroup].", $_)
             }
         }
-
-        $module.ExitJson()
     }
     elseif ($state -eq "present") {
         try {
@@ -85,8 +83,21 @@ try {
                 EnableException = $true
                 Confirm = $false
             }
-            Add-DbaAgDatabase @addAgDatabaseSplat
-            $output = $null
+            $addAgDatabaseOutput = Add-DbaAgDatabase @addAgDatabaseSplat
+            $syncStateNames = [Enum]::GetNames("Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseSynchronizationState")
+            $replicaRoleNames = [Enum]::GetNames("Microsoft.SqlServer.Management.Smo.AvailabilityReplicaRole")
+            $output = [PSCustomObject]@{
+                ComputerName = $addAgDatabaseOutput.ComputerName
+                InstanceName = $addAgDatabaseOutput.InstanceName
+                SqlInstance = $addAgDatabaseOutput.SqlInstance
+                AvailabilityGroup = $addAgDatabaseOutput.AvailabilityGroup
+                LocalReplicaRole = $replicaRoleNames[$addAgDatabaseOutput.LocalReplicaRole]
+                Name = $addAgDatabaseOutput.Name
+                SynchronizationState = $syncStateNames[$addAgDatabaseOutput.SynchronizationState]
+                IsFailoverReady = $addAgDatabaseOutput.IsFailoverReady
+                IsJoined = $addAgDatabaseOutput.IsJoined
+                IsSuspended = $addAgDatabaseOutput.IsSuspended
+            }
             $module.Result.changed = $true
         }
         catch {
@@ -98,6 +109,7 @@ try {
         $resultData = ConvertTo-SerializableObject -InputObject $output
         $module.Result.data = $resultData
     }
+
     $module.ExitJson()
 }
 catch {
