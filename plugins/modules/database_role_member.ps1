@@ -34,14 +34,15 @@ try {
     # Get database role member status
     try {
         $server = Connect-DbaInstance -SqlInstance $sqlInstance -SqlCredential $sqlCredential
-        $existingDatabaseRoleMember = $server | Get-DbaDbRoleMember -Database $database -Role $roleName
+        $existingDbRoleMembers = $server | Get-DbaDbRoleMember -Database $database -Role $roleName | Select-Object -ExpandProperty UserName
     }
     catch {
         $module.FailJson("Error checking database role member status.", $_.Exception.Message)
     }
 
     if ($state -eq "absent") {
-        if ($null -ne $existingDatabaseRoleMember) {
+        # Remove member from database role
+        if ($null -ne $existingDbRoleMembers -and $existingDbRoleMembers -contains $userName) {
             try {
                 $removeDatabaseRoleMemberSplat = @{
                     SqlInstance = $sqlInstance
@@ -53,19 +54,18 @@ try {
                     EnableException = $true
                     Confirm = $false
                 }
-                $output = Remove-DbaDbRoleMember @removeDatabaseRoleMemberSplat
+                Remove-DbaDbRoleMember @removeDatabaseRoleMemberSplat
+                $existingDbRoleMembers = $existingDbRoleMembers | Where-Object { $_ -ne $userName }
                 $module.Result.changed = $true
             }
             catch {
                 $module.FailJson("Deleting member [$userName] from role [$roleName] failed.", $_)
             }
         }
-
-        $module.ExitJson()
     }
     elseif ($state -eq "present") {
-        # Create server role
-        if ($null -eq $existingDatabaseRoleMember) {
+        # Add member to database role
+        if ($null -eq $existingDbRoleMembers -or $existingDbRoleMembers -notcontains $userName) {
             try {
                 $addDatabaseRoleMemberSplat = @{
                     SqlInstance = $sqlInstance
@@ -78,13 +78,20 @@ try {
                     Confirm = $false
                 }
 
-                $output = Add-DbaDbRoleMember @addDatabaseRoleMemberSplat
+                Add-DbaDbRoleMember @addDatabaseRoleMemberSplat
+                $existingDbRoleMembers += $userName
                 $module.Result.changed = $true
             }
             catch {
                 $module.FailJson("Adding member [$userName] to role [$roleName] failed.", $_)
             }
         }
+    }
+
+    $output = [PSCustomObject]@{
+        Role = $roleName
+        Database = $database
+        Members = $existingDbRoleMembers
     }
 
     if ($null -ne $output) {
