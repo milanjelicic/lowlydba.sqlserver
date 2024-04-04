@@ -32,14 +32,14 @@ try {
     # Get server role member status
     try {
         $server = Connect-DbaInstance -SqlInstance $sqlInstance -SqlCredential $sqlCredential
-        $existingServerRoleMember = $server | Get-DbaServerRoleMember -ServerRole $roleName -Login $loginName
+        $existingServerRoleMembers = $server | Get-DbaServerRoleMember -ServerRole $roleName | Select-Object -ExpandProperty Login
     }
     catch {
         $module.FailJson("Error checking server role member status.", $_.Exception.Message)
     }
 
     if ($state -eq "absent") {
-        if ($null -ne $existingServerRoleMember) {
+        if ($null -ne $existingServerRoleMembers -and $existingServerRoleMembers -contains $loginName) {
             try {
                 $removeServerRoleMemberSplat = @{
                     SqlInstance = $sqlInstance
@@ -51,18 +51,17 @@ try {
                     Confirm = $false
                 }
                 $output = Remove-DbaServerRoleMember @removeServerRoleMemberSplat
+                $existingServerRoleMembers = $existingServerRoleMembers | Where-Object { $_ -ne $loginName }
                 $module.Result.changed = $true
             }
             catch {
                 $module.FailJson("Deleting member [$loginName] from role [$roleName] failed.", $_)
             }
         }
-
-        $module.ExitJson()
     }
     elseif ($state -eq "present") {
         # Create server role
-        if ($null -eq $existingServerRoleMember) {
+        if ($null -eq $existingServerRoleMembers -or $existingServerRoleMembers -notcontains $loginName) {
             try {
                 $addServerRoleMemberSplat = @{
                     SqlInstance = $sqlInstance
@@ -75,6 +74,7 @@ try {
                 }
 
                 $output = Add-DbaServerRoleMember @addServerRoleMemberSplat
+                $existingServerRoleMembers += $loginName
                 $module.Result.changed = $true
             }
             catch {
@@ -83,10 +83,17 @@ try {
         }
     }
 
+    $output = [PSCustomObject]@{
+        instance = $sqlInstance
+        members = $existingServerRoleMembers
+        role = $roleName
+    }
+
     if ($null -ne $output) {
         $resultData = ConvertTo-SerializableObject -InputObject $output
         $module.Result.data = $resultData
     }
+
     $module.ExitJson()
 }
 catch {

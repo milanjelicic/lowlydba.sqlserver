@@ -44,7 +44,7 @@ EXAMPLES = r'''
 RETURN = r'''
 data:
   description:
-    - Output from the C(Add-DbaAgDatabase) or C(Remove-DbaAgDatabase) function.
+    - A modified version of the output from the C(Add-DbaAgDatabase) or C(Remove-DbaAgDatabase) function.
   returned: success, but not in check_mode.
   type: dict
 '''

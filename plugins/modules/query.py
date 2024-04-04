@@ -53,7 +53,12 @@ EXAMPLES = r'''
 
 RETURN = r'''
 data:
-  description: Modified output from the C(Invoke-DbaQuery) function.
+  description:
+    - Modified output from the C(Invoke-DbaQuery) function.
+    - Properties:
+      - results: the result of the query as a list of dictionaries.
+      - messages: list of output messages.
+      - completion_time: time when the query was completed.
   returned: success, but not in check_mode.
   type: dict
 '''

@@ -44,7 +44,11 @@ EXAMPLES = r'''
 RETURN = r'''
 data:
   description:
-    - Output from the C(Add-DbaServerRoleMember) or C(Remove-DbaServerRoleMember) function.
+    - A dictionary object with information on the modified role.
+    - Properties:
+      - instance: SQL Server instance name.
+      - members: updated list of server logins who are members of this role.
+      - role: name of the server role.
   returned: success, but not in check_mode.
   type: dict
 '''
