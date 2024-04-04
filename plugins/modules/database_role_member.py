@@ -50,7 +50,11 @@ EXAMPLES = r'''
 RETURN = r'''
 data:
   description:
-    - Output from the C(Add-DbaDbRoleMember) or C(Remove-DbaDbRoleMember) function.
+    - A dictionary object with information on the modified role.
+    - Properties:
+      - Database: name of the database.
+      - Members: updated list of database users who are members of this role.
+      - Role: name of the database role.
   returned: success, but not in check_mode.
   type: dict
 '''
