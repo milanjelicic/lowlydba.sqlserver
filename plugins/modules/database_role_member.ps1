@@ -34,7 +34,8 @@ try {
     # Get database role member status
     try {
         $server = Connect-DbaInstance -SqlInstance $sqlInstance -SqlCredential $sqlCredential
-        $existingDbRoleMembers = $server | Get-DbaDbRoleMember -Database $database -Role $roleName | Select-Object -ExpandProperty UserName
+        $existingDbRoleMembers = @()
+        $server | Get-DbaDbRoleMember -Database $database -Role $roleName | ForEach-Object { $existingDbRoleMembers += $_.Name }
     }
     catch {
         $module.FailJson("Error checking database role member status.", $_.Exception.Message)
