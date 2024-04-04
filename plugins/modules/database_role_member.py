@@ -52,9 +52,9 @@ data:
   description:
     - A dictionary object with information on the modified role.
     - Properties:
-      - Database: name of the database.
-      - Members: updated list of database users who are members of this role.
-      - Role: name of the database role.
+      - database: name of the database.
+      - members: updated list of database users who are members of this role.
+      - role: name of the database role.
   returned: success, but not in check_mode.
   type: dict
 '''

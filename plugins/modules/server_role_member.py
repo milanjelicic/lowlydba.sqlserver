@@ -46,8 +46,9 @@ data:
   description:
     - A dictionary object with information on the modified role.
     - Properties:
-      - Members: updated list of server logins who are members of this role.
-      - Role: name of the server role.
+      - instance: SQL Server instance name.
+      - members: updated list of server logins who are members of this role.
+      - role: name of the server role.
   returned: success, but not in check_mode.
   type: dict
 '''

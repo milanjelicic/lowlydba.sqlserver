@@ -84,9 +84,9 @@ try {
     }
 
     $output = [PSCustomObject]@{
-        Instance = $sqlInstance
-        Members = $existingServerRoleMembers
-        Role = $roleName
+        instance = $sqlInstance
+        members = $existingServerRoleMembers
+        role = $roleName
     }
 
     if ($null -ne $output) {

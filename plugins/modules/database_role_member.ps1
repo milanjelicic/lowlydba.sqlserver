@@ -89,9 +89,9 @@ try {
     }
 
     $output = [PSCustomObject]@{
-        Database = $database
-        Members = $existingDbRoleMembers
-        Role = $roleName
+        database = $database
+        members = $existingDbRoleMembers
+        role = $roleName
     }
 
     if ($null -ne $output) {
