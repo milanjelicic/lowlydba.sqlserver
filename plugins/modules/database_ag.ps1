@@ -43,8 +43,8 @@ try {
         $module.FailJson("Error checking availability group status.", $_)
     }
 
+    $databases = $existingAg.AvailabilityDatabases | Select-Object Name
     if ($state -eq "absent") {
-        $databases = $existingAg.AvailabilityDatabases | Select-Object Name
         if ($databases.Name -contains $database) {
             try {
                 $removeAgDatabaseSplat = @{
@@ -71,37 +71,39 @@ try {
         }
     }
     elseif ($state -eq "present") {
-        try {
-            $addAgDatabaseSplat = @{
-                SqlInstance = $primaryNode
-                SqlCredential = $sqlCredential
-                Secondary = $secondaryNode
-                SecondarySqlCredential = $sqlCredential
-                AvailabilityGroup = $availabilityGroup
-                Database = $database
-                WhatIf = $checkMode
-                EnableException = $true
-                Confirm = $false
+        if ($databases.Name -notcontains $database) {
+            try {
+                $addAgDatabaseSplat = @{
+                    SqlInstance = $primaryNode
+                    SqlCredential = $sqlCredential
+                    Secondary = $secondaryNode
+                    SecondarySqlCredential = $sqlCredential
+                    AvailabilityGroup = $availabilityGroup
+                    Database = $database
+                    WhatIf = $checkMode
+                    EnableException = $true
+                    Confirm = $false
+                }
+                $addAgDatabaseOutput = Add-DbaAgDatabase @addAgDatabaseSplat
+                $syncStateNames = [Enum]::GetNames("Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseSynchronizationState")
+                $replicaRoleNames = [Enum]::GetNames("Microsoft.SqlServer.Management.Smo.AvailabilityReplicaRole")
+                $output = [PSCustomObject]@{
+                    ComputerName = $addAgDatabaseOutput.ComputerName
+                    InstanceName = $addAgDatabaseOutput.InstanceName
+                    SqlInstance = $addAgDatabaseOutput.SqlInstance
+                    AvailabilityGroup = $addAgDatabaseOutput.AvailabilityGroup
+                    LocalReplicaRole = $replicaRoleNames[$addAgDatabaseOutput.LocalReplicaRole]
+                    Name = $addAgDatabaseOutput.Name
+                    SynchronizationState = $syncStateNames[$addAgDatabaseOutput.SynchronizationState]
+                    IsFailoverReady = $addAgDatabaseOutput.IsFailoverReady
+                    IsJoined = $addAgDatabaseOutput.IsJoined
+                    IsSuspended = $addAgDatabaseOutput.IsSuspended
+                }
+                $module.Result.changed = $true
             }
-            $addAgDatabaseOutput = Add-DbaAgDatabase @addAgDatabaseSplat
-            $syncStateNames = [Enum]::GetNames("Microsoft.SqlServer.Management.Smo.AvailabilityDatabaseSynchronizationState")
-            $replicaRoleNames = [Enum]::GetNames("Microsoft.SqlServer.Management.Smo.AvailabilityReplicaRole")
-            $output = [PSCustomObject]@{
-                ComputerName = $addAgDatabaseOutput.ComputerName
-                InstanceName = $addAgDatabaseOutput.InstanceName
-                SqlInstance = $addAgDatabaseOutput.SqlInstance
-                AvailabilityGroup = $addAgDatabaseOutput.AvailabilityGroup
-                LocalReplicaRole = $replicaRoleNames[$addAgDatabaseOutput.LocalReplicaRole]
-                Name = $addAgDatabaseOutput.Name
-                SynchronizationState = $syncStateNames[$addAgDatabaseOutput.SynchronizationState]
-                IsFailoverReady = $addAgDatabaseOutput.IsFailoverReady
-                IsJoined = $addAgDatabaseOutput.IsJoined
-                IsSuspended = $addAgDatabaseOutput.IsSuspended
+            catch {
+                $module.FailJson("An exception occurred while trying to add database [$database] to AG [$availabilityGroup].", $_)
             }
-            $module.Result.changed = $true
-        }
-        catch {
-            $module.FailJson("An exception occurred while trying to add database [$database] to AG [$availabilityGroup].", $_)
         }
     }
 
